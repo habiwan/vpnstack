@@ -35,13 +35,13 @@ services:
       - npmdb
   npmdb:
     container_name: maria_for_nginx
-    image: yobasystems/alpine-mariadb
+    image: yobasystems/alpine-mariadb:latest
     restart: unless-stopped
     volumes:
       - npmdb:/var/lib/mysql
   adguardhome:
     container_name: adguardhome
-    image: adguard/adguardhome
+    image: adguard/adguardhome:latest
     restart: unless-stopped
     ports:
       - 53:53/tcp # plain dns over tcp
