@@ -1,0 +1,64 @@
+services:
+  wgdashboard:
+    image: donaldzou/wgdashboard:latest
+    container_name: wgdashboard
+    restart: unless-stopped
+    network_mode: bridge
+    ports:
+      - 10086:10086/tcp
+      - 51888:51888/udp
+    volumes:
+      - wgconf:/etc/wireguard
+      - wgdata:/data
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    network_mode: host 
+    restart: unless-stopped
+    volumes:
+      - duckdns:/config 
+  npm:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: npm
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 81:81
+      - 443:443
+    volumes:
+      - npmdata:/data
+      - letsencrypt:/etc/letsencrypt
+    depends_on:
+      - npmdb
+  npmdb:
+    container_name: maria_for_nginx
+    image: yobasystems/alpine-mariadb:10.4.17-arm32v7
+    restart: unless-stopped
+    volumes:
+      - npmdb:/var/lib/mysql
+  adguardhome:
+    container_name: adguardhome
+    image: adguard/adguardhome
+    restart: unless-stopped
+    ports:
+      - 53:53/tcp # plain dns over tcp
+      - 53:53/udp # plain dns over udp
+      - 82:80/tcp # http web interface
+      - 3002:3000/tcp # initial setup web interface
+    volumes:
+      - aghconfig:/opt/adguardhome/conf # app configuration
+      - aghwork:/opt/adguardhome/work # app working directory  
+volumes:
+  aghconfig:
+    driver: local
+  aghwork:
+    driver: local
+  wgconf:
+  wgdata:
+  duckdns:
+  npmdata:
+  letsencrypt:
+  npmdb:
