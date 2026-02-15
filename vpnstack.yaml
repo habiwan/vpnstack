@@ -35,7 +35,7 @@ services:
       - npmdb
   npmdb:
     container_name: maria_for_nginx
-    image: yobasystems/alpine-mariadb:10.4.17-arm32v7
+    image: yobasystems/alpine-mariadb
     restart: unless-stopped
     volumes:
       - npmdb:/var/lib/mysql
