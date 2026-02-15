@@ -6,7 +6,7 @@ services:
     network_mode: bridge
     ports:
       - 10086:10086/tcp
-      - 51888:51888/udp
+      - 51820:51820/udp
     volumes:
       - wgconf:/etc/wireguard
       - wgdata:/data
