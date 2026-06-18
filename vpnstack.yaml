@@ -3,54 +3,84 @@ services:
     image: donaldzou/wgdashboard:latest
     container_name: wgdashboard
     restart: unless-stopped
-    network_mode: bridge
     ports:
       - 10086:10086/tcp
-      - 51820:51820/udp
+      - 51888:51888/udp
     volumes:
       - wgconf:/etc/wireguard
       - wgdata:/data
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
+
   duckdns:
     image: lscr.io/linuxserver/duckdns:latest
     container_name: duckdns
-    network_mode: host 
     restart: unless-stopped
+    environment:
+      - TZ=Europe/London
+      - SUBDOMAINS=${DUCKDNS_SUBDOMAIN}
+      - TOKEN=${DUCKDNS_TOKEN}
+      - LOG_FILE=true
     volumes:
-      - duckdns:/config 
+      - duckdns:/config
+
   npm:
     image: jc21/nginx-proxy-manager:latest
     container_name: npm
     restart: unless-stopped
     ports:
-      - 80:80
-      - 81:81
-      - 443:443
+      - 8080:8080
+      - 8081:8081
+      - 8443:8443
+    environment:
+      - TZ=Europe/London
+      - DB_MYSQL_HOST=npmdb
+      - DB_MYSQL_PORT=3306
+      - DB_MYSQL_USER=npm
+      - DB_MYSQL_PASSWORD=npm
     volumes:
       - npmdata:/data
       - letsencrypt:/etc/letsencrypt
     depends_on:
       - npmdb
+
   npmdb:
     container_name: maria_for_nginx
     image: yobasystems/alpine-mariadb:latest
     restart: unless-stopped
+    environment:
+      - TZ=Europe/London
+      - MYSQL_ROOT_PASSWORD=npm
+      - MYSQL_DATABASE=npm
+      - MYSQL_USER=npm
+      - MYSQL_PASSWORD=npm
     volumes:
       - npmdb:/var/lib/mysql
+
   adguardhome:
     container_name: adguardhome
     image: adguard/adguardhome:latest
     restart: unless-stopped
     ports:
-      - 53:53/tcp # plain dns over tcp
-      - 53:53/udp # plain dns over udp
-      - 82:80/tcp # http web interface
-      - 3002:3000/tcp # initial setup web interface
+      - 53:53/tcp
+      - 53:53/udp
+      - 82:80/tcp    # The main web dashboard (post-setup)
+      - 83:3000/tcp  # The initial setup wizard (collision-proofed)
     volumes:
-      - aghconfig:/opt/adguardhome/conf # app configuration
-      - aghwork:/opt/adguardhome/work # app working directory  
+      - aghconfig:/opt/adguardhome/conf
+      - aghwork:/opt/adguardhome/work
+    cap_add:
+      - NET_ADMIN
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: always
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TOKEN}
+
 volumes:
   aghconfig:
     driver: local
