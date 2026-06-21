@@ -16,7 +16,7 @@
                  .-=*##*#*=-:.
 habiwan presents:
 # vpnstack
-docker portainer stack for WireGuard VPN + duckDNS + AdGuard Home + Nginx Proxy Manager
+docker portainer stack for WireGuard VPN + duckDNS + AdGuard Home + Nginx Proxy Manager + VaultWarden
 
 What this allows you to do is access your home local LAN securely and for free without any hassle configuring certificates or anything like that...
 
@@ -51,3 +51,21 @@ See <a href>https://rustdesk.com/docs/en/self-host/rustdesk-server-oss/docker/</
     b. Port 80 for NPM
     c. Port 443 for NPM(SSL)
 15. In your Router, find the DNS config and force DNS1 to be YOURUBUNTUVMIPADDR, DNS2 can be 1.1.1.1 for example...
+
+UPDATE: vodafone UK has recently removed the capability to their Vodafone Hub 7 Routers to do the following:
+ - Port forwarding 80 443 or 53 not allowed anymore (I believe all low numbered ports are not allowed anymore)
+ - Port forwarding 8080 or 8443 same
+ - editing your local DNS not possible anymore
+
+This is bad, my duckdns + NPM solutions are not possible anymore... you can still use the NPM plus I got there to sign certs via   letsencrypt using DNS challenge with your duckdns token, but it would only work locally if you want to edit all your local hosts files... well, why not use the adguard DNS you got there? because they castrated that too... ! One possibility easy enough would be to do use adguard DNS and all your devices, tell them manual DNS... but that is way too much hassle so I decided to go Tailscale route. Tailscale is free and even though I got there the cloudflare solution that works wit hthe cf token, at the end of the day, you still have to pay for your own domain. So having Duckdns taken out of the picture, what other free DDNS are there? Tailscale. So now I updated the docker compose yaml and env you can use in portainer, simplifying the whole lot... you do not have to use duckdns npm or cf anymore, delete them, and I added an example for VaultWarden, which makes sense to me to have in the VPN Stack anyways...
+
+1. get a free Tailscale account
+2. go see what Tailnet DNS name they gave you
+Under https://login.tailscale.com/admin/dns (you can roll the dice if you no likey and wanna easier to remember one...)
+3. install tailscale on the pc you use... for this I decided Rpi5 is good enough
+4. run the tailscale cert command
+5. run and stop the stack to create the volumes, more pressing, you need the vw data folder
+6. create a certs folder with su with mkdir /var/lib/docker/volumes/vpnstack_vw-data/_data/certs
+7. put the cert and key created in step 4. there
+
+Now you can login to tailscale, there are clients for all OSes and phones and access your vaultwarden with https right there...
