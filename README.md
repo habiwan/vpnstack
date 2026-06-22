@@ -57,15 +57,21 @@ UPDATE: vodafone UK has recently removed the capability to their Vodafone Hub 7 
  - Port forwarding 8080 or 8443 same
  - editing your local DNS not possible anymore
 
-This is bad, my duckdns + NPM solutions are not possible anymore... you can still use the NPM plus I got there to sign certs via   letsencrypt using DNS challenge with your duckdns token, but it would only work locally if you want to edit all your local hosts files... well, why not use the adguard DNS you got there? because they castrated that too... ! One possibility easy enough would be to do use adguard DNS and all your devices, tell them manual DNS... but that is way too much hassle so I decided to go Tailscale route. Tailscale is free and even though I got there the cloudflare solution that works wit hthe cf token, at the end of the day, you still have to pay for your own domain. So having Duckdns taken out of the picture, what other free DDNS are there? Tailscale. So now I updated the docker compose yaml and env you can use in portainer, simplifying the whole lot... you do not have to use duckdns npm or cf anymore, delete them, and I added an example for VaultWarden, which makes sense to me to have in the VPN Stack anyways...
+This is bad, my duckdns + NPM solutions are not possible anymore... you can still use the NPM plus I got there to sign certs via   letsencrypt using DNS challenge with your duckdns token, but it would only work locally if you want to edit all your local hosts files... well, why not use the adguard DNS you got there? because they castrated that too... ! One possibility easy enough would be to do use adguard DNS and all your devices, tell them manually your DNS IP... but that is way too much hassle so I decided to go Tailscale route. Tailscale is free and even though I got here also the cloudflare solution that works with the cf token, at the end of the day, you still have to pay for your own domain. So having Duckdns taken out of the picture, what other free DDNS are there? Tailscale. So now I updated the docker compose yaml and env you can use in portainer, simplifying the whole lot... you do not have to use duckdns npm or cf anymore, delete them, and I added an example for VaultWarden, which makes sense to me to have in the VPN Stack anyways... 
+
+The issue: VaultWarden does not let you access via port 80, without NPM and duckdns, this is how you do it with tailscale:
 
 1. get a free Tailscale account
-2. go see what Tailnet DNS name they gave you
-Under https://login.tailscale.com/admin/dns (you can roll the dice if you no likey and wanna easier to remember one...)
-3. install tailscale on the pc you use... for this I decided Rpi5 is good enough
+2. go see what Tailnet DNS name they gave you:
+https://login.tailscale.com/admin/dns (you can roll the dice if you no likey and wanna easier to remember one...)
+3. install tailscale on the pc you use... I decided a pi 5 is good enough for the whole stack
 4. run the tailscale cert command
-5. run and stop the stack to create the volumes, more pressing, you need the vw data folder
-6. create a certs folder with su with mkdir /var/lib/docker/volumes/vpnstack_vw-data/_data/certs
+5. run and stop the stack to create the volumes, you need the vw-data folder
+6. create a certs folder with su with
+sudo mkdir /var/lib/docker/volumes/vpnstack_vw-data/_data/certs
 7. put the cert and key created in step 4. there
+8. sudo chmod 644 /var/lib/docker/volumes/vpnstack_vw-data/_data/certs/*
 
 Now you can login to tailscale, there are clients for all OSes and phones and access your vaultwarden with https right there...
+
+No need to pay for a domain and use cloudflare to generate certificates and point to it anymore, no need to use a duckdns free ddns and use nginx proxy manager to sign certificates and point to it anymore, we just use tailscale certs now. And thus we avoided the vodafone UK recent lockdown on free private home hosting of a VaultWarden or any other https:// required service. For DNS adblocking there is still the hassle of manually entering the adblock home IP Address on your devices but hey, what can you do...
