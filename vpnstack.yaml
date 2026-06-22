@@ -7,6 +7,7 @@ services:
     ports:
       - 10086:10086
       - 51888:51888/udp
+      - 51820:51820/udp
     dns:
       - 1.1.1.1
       - 8.8.8.8
@@ -22,12 +23,13 @@ services:
   vaultwarden:
     image: vaultwarden/server:latest
     container_name: vaultwarden
-    restart: unless-stopped
+    restart: always
     network_mode: bridge
     ports:
       - 443:80/tcp
     environment:
       - ROCKET_TLS=${VAULTWARDEN_TAILSCALE_CERTS}
+      - ADMIN_TOKEN=${VW_ADMIN_TOKEN}
     volumes:
       - vw-data:/data
 
@@ -82,7 +84,7 @@ services:
   adguardhome:
     container_name: adguardhome
     image: adguard/adguardhome:latest
-    restart: unless-stopped
+    restart: always
     network_mode: bridge
     ports: 
       - 53:53/tcp
@@ -116,3 +118,14 @@ volumes:
   letsencrypt:
   npmdb:
   vw-data:
+
+# environment variables:
+# NOTE: For VaultWarden create a free Tailscale account and get certs into portainer e.g.
+# sudo mkdir /var/lib/docker/volumes/myvpnstack_vw-data/_data/certs
+# Also,  docker needs to read the tailscale cert and key so give it 644
+# sudo chmod 644 /var/lib/docker/volumes/myvpnstack_vw-data/_data/certs/*
+
+# VAULTWARDEN_TAILSCALE_CERTS={certs=/data/certs/your_machine.your_tailnet_DNS_Name.ts.net.crt,key=/data/certs/your_machine.your_tailnet_DNS_Name.ts.net.key}
+# CLOUDFLARE_TOKEN=your_cloudflare_token
+# DUCKDNS_TOKEN=your_duckdns_token
+# DUCKDNS_SUBDOMAIN=your_duckdns_subdomain_without_duckdns.org
