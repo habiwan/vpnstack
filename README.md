@@ -59,7 +59,7 @@ UPDATE: vodafone UK has recently removed the capability to their Vodafone Hub 7 
 
 This is bad, my duckdns + NPM solutions are not possible anymore... you can still use the NPM plus I got there to sign certs via   letsencrypt using DNS challenge with your duckdns token, but it would only work locally if you want to edit all your local hosts files... well, why not use the adguard DNS you got there? because they castrated that too... ! One possibility easy enough would be to do use adguard DNS and all your devices, tell them manually your DNS IP... but that is way too much hassle so I decided to go Tailscale route. Tailscale is free and even though I got here also the cloudflare solution that works with the cf token, at the end of the day, you still have to pay for your own domain. So having Duckdns taken out of the picture, what other free DDNS are there? Tailscale. So now I updated the docker compose yaml and env you can use in portainer, simplifying the whole lot... you do not have to use duckdns npm or cf anymore, delete them, and I added an example for VaultWarden, which makes sense to me to have in the VPN Stack anyways... 
 
-The issue: VaultWarden does not let you access via port 80, without NPM and duckdns, this is how you do it with tailscale:
+THE ISSUE: VaultWarden does not let you access via port 80, without NPM and duckdns, this is how you do it with tailscale:
 
 1. get a free Tailscale account
 2. go see what Tailnet DNS name they gave you:
@@ -75,3 +75,5 @@ sudo mkdir /var/lib/docker/volumes/vpnstack_vw-data/_data/certs
 Now you can login to tailscale, there are clients for all OSes and phones and access your vaultwarden with https right there...
 
 No need to pay for a domain and use cloudflare to generate certificates and point to it anymore, no need to use a duckdns free ddns and use nginx proxy manager to sign certificates and point to it anymore, we just use tailscale certs now. And thus we avoided the vodafone UK recent lockdown on free private home hosting of a VaultWarden or any other https:// required service. For DNS adblocking there is still the hassle of manually entering the adblock home IP Address on your devices but hey, what can you do...
+
+STRETCH GOAL: Add a headscale compose config to this, so there are 2 VPNs, wireguard and tailscale locally on this single portainer compose stack. In the past I tried to set up headscale but failed miserably... too much hassle tbh. I will try again to make headscale work, I will update here if I manage, so EVERYTHING stays local, even the tailscale dns? requires further investigation but would be nice to have it all contained locally and not having to use a tailscale account. 
