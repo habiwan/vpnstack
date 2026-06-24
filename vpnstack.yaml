@@ -122,10 +122,15 @@ volumes:
 # environment variables:
 # NOTE: For VaultWarden create a free Tailscale account and get certs into portainer e.g.
 # sudo mkdir /var/lib/docker/volumes/myvpnstack_vw-data/_data/certs
+# and cd to it, then run
+# sudo tailscale cert you_machine.your_tailscale_dns.ts.net
 # Also,  docker needs to read the tailscale cert and key so give it 644
 # sudo chmod 644 /var/lib/docker/volumes/myvpnstack_vw-data/_data/certs/*
+# Finally, to generate an /admin webpage token (passwordd) run:
+# docker run --rm -it vaultwarden/server /vaultwarden hash
 
 # VAULTWARDEN_TAILSCALE_CERTS={certs=/data/certs/your_machine.your_tailnet_DNS_Name.ts.net.crt,key=/data/certs/your_machine.your_tailnet_DNS_Name.ts.net.key}
+# VW_ADMIN_TOKEN='your_vaultwarden_admin_token'
 # CLOUDFLARE_TOKEN=your_cloudflare_token
 # DUCKDNS_TOKEN=your_duckdns_token
 # DUCKDNS_SUBDOMAIN=your_duckdns_subdomain_without_duckdns.org
