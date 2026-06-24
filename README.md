@@ -62,18 +62,23 @@ This is bad, my duckdns + NPM solutions are not possible anymore... you can stil
 THE ISSUE: VaultWarden does not let you access via port 80, without NPM and duckdns, this is how you do it with tailscale:
 
 1. get a free Tailscale account
-2. go see what Tailnet DNS name they gave you:
-https://login.tailscale.com/admin/dns (you can roll the dice if you no likey and wanna easier to remember one...)
-3. install tailscale on the pc you use... I decided a pi 5 is good enough for the whole stack
+2. go see what Tailnet DNS name they gave you in:
+https://login.tailscale.com/admin/dns
+3. install tailscale on the pc you use... I decided to use a pi 5, it's good enough for the whole stack
 4. run the tailscale cert command
-5. run and stop the stack to create the volumes, you need the vw-data folder
-6. create a certs folder with su with
+sudo tailscale cert your_machine.your_tailscale_dns.ts.net
+6. run and stop the stack to create the volumes, you need the vw-data folder
+7. create a certs folder with su with
 sudo mkdir /var/lib/docker/volumes/vpnstack_vw-data/_data/certs
-7. put the cert and key created in step 4. there
-8. sudo chmod 644 /var/lib/docker/volumes/vpnstack_vw-data/_data/certs/*
+8. put the cert and key created in step 4. there
+9. sudo chmod 644 /var/lib/docker/volumes/vpnstack_vw-data/_data/certs/*
 
-Now you can login to tailscale, there are clients for all OSes and phones and access your vaultwarden with https right there...
+Now you can login to tailscale, there are clients for all OSes and phones and access your vaultwarden with https right there... While tailscale is running and only while it's running you and only you can access it making it even more secure.
 
-No need to pay for a domain and use cloudflare to generate certificates and point to it anymore, no need to use a duckdns free ddns and use nginx proxy manager to sign certificates and point to it anymore, we just use tailscale certs now. And thus we avoided the vodafone UK recent lockdown on free private home hosting of a VaultWarden or any other https:// required service. For DNS adblocking there is still the hassle of manually entering the adblock home IP Address on your devices but hey, what can you do...
+Your Tailscale URL also has a /admin page for admin pourposes, to generate the login password (argon2 token) simply run:
+
+docker run --rm -it vaultwarden/server /vaultwarden hash
+
+No need to pay for a domain and use cloudflare to generate certificates and point to it anymore, no need to use a duckdns free ddns and use nginx proxy manager to sign certificates and point to it anymore, we just use tailscale certs now. And thus we avoided the vodafone UK recent lockdown on free private home hosting of a VaultWarden or any other https:// required service. For DNS adblocking there is still the hassle of manually entering the adblock home IP Address on your devices but hey, what can you do... At least you got the Wireguard VPN running now again as long as your router still allows you to forward the 51820 port or whichever port you set up in the "http://wgdashboard:10086" URL... and if must be, VaultWarden with Tailscale VPN Mesh which is also cool. If you have 2 places with a raspberry pi like I do (1 in Spain in my parent's flat and one here in the UK) you can have 2 tailscale endpoints allowing you to use a UK or a Spanish IP, just in install tailscale on both, this stack is then not needed and no port forwarding from your router is needed either. But if you want to control the VPN via Wireguard then install the stack and forward the ports you setup.
 
 STRETCH GOAL: Add a headscale compose config to this, so there are 2 VPNs, wireguard and tailscale locally on this single portainer compose stack. In the past I tried to set up headscale but failed miserably... too much hassle tbh. I will try again to make headscale work, I will update here if I manage, so EVERYTHING stays local, even the tailscale dns? requires further investigation but would be nice to have it all contained locally and not having to use a tailscale account. 
