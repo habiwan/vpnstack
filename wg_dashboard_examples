@@ -1,0 +1,104 @@
+# This is an example of WireGuard Dashboard Setup to allow LAN Access:
+
+Name wg0 (allowing LAN access)
+Public Key your_public_key
+Private Key your_private_key 
+IP Adress/CIDR
+10.0.0.1/24
+Listen Port
+51888 (of your choosing, your router MUST forward this port from WAN to the wgdashboard IP - docker machine)
+
+Optional Settings:
+Table
+blank
+PreUp
+blank
+PreDown
+blank
+PostUp (eth0 is typical but change if yours is not...)
+iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE;
+PostDown
+iptables -D FORWARD -i wg0 -iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE;
+
+Override Peer Settings
+Only apply to peers in this configuration
+DNS
+192.168.X.X (your internet Router DHCP given Gateway IP)
+Endpoint Allowed IPs
+0.0.0.0/0
+Listen Port
+51888 (same as wg0's)
+MTU
+1420
+Peer Remote Endpoint
+your_subdomain.duckdns.org
+Persistent Keepalive
+21
+
+example Peer Settings:
+Public Key your_peer_pubkey
+Name 
+cool_name_ISP_IP_and_LAN_access
+Notes
+blank
+Private Key(Required for QR Code and Download)
+your_peer_privkey
+Allowed IPs(Required)
+10.0.0.2/32
+Endpoint Allowed IPs(Required)
+0.0.0.0/0
+DNS
+1.1.1.1
+
+# This is an example of WireGuard Dashboard Setup to NOT allow LAN Access, e.g. to share your ISP IP for family and friends:
+
+Name wg1 (disallowing LAN access)
+Public Key your_public_key
+Private Key your_private_key 
+IP Adress/CIDR
+10.20.0.1/24
+Listen Port
+51820 (of your choosing, your router MUST forward this port from WAN to the wgdashboard IP - docker machine)
+
+Optional Settings:
+Table
+blank
+PreUp
+blank
+PreDown
+blank
+PostUp (eth0 is typical but change if yours is not...) 
+to DISALLOW LAN access enter your router DHCP subnet where it says 192.168.X.0/24, e.g 192.168.0.0/24 or 192.168.1.0/24
+iptables -A FORWARD -i wg1 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE; iptables -I FORWARD -i wg1 -d 192.168.X.0/24 -j REJECT
+PostDown
+iptables -D FORWARD -i wg1 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE; iptables -D FORWARD -i wg1 -d 192.168.X.0/24 -j REJECT
+
+Override Peer Settings
+Only apply to peers in this configuration
+DNS
+1.1.1.1 (your internet Router DHCP given Gateway IP will not work as we are blocking it so here use public one like 9.9.9.9 or 8.8.8.8)
+Endpoint Allowed IPs
+0.0.0.0/0
+Listen Port
+51820 (same as wg1's)
+MTU
+1420
+Peer Remote Endpoint
+your_subdomain.duckdns.org
+Persistent Keepalive
+21
+
+example Peer Settings:
+Public Key your_peer_pubkey
+Name 
+cool_name_ISP_IP_only_no_LAN_access
+Notes
+blank
+Private Key(Required for QR Code and Download)
+your_peer_privkey
+Allowed IPs(Required)
+10.20.0.2/32
+Endpoint Allowed IPs(Required)
+0.0.0.0/0
+DNS
+1.1.1.1
